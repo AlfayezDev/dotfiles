@@ -1,0 +1,7 @@
+# ~/dotfiles/.config/zsh/macos
+export PATH="/opt/homebrew/bin:$PATH"
+export PATH="$HOME/.bun/bin:$PATH"
+export NODE_EXTRA_CA_CERTS="$HOME/mycerts.pem"
+# alias python=python3
+export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
+. "$HOME/.cargo/env"

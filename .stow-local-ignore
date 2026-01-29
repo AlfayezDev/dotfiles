@@ -1,0 +1,10 @@
+\.git
+\config
+\.gitignore
+\.stow-local-ignore
+^/README.*
+^/LICENSE.*
+^/install\.sh
+^/stow\.sh
+^/\.config/secrets/secrets\.template$
+

@@ -1,0 +1,14 @@
+# Ignore compiled files
+*.o
+*.so
+*.dll
+*.pyc
+*.class
+.config/
+
+# Ignore secrets and private info
+config/secrets/secrets
+
+# Ignore plugin/package directories
+lazy-lock.json
+repomix-output.*

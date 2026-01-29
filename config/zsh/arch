@@ -1,0 +1,7 @@
+# ~/dotfiles/.config/zsh/arch
+
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $HOME/emsdk/emsdk_env.sh
+
+alias pacupdate="sudo pacman -Syu"
+
