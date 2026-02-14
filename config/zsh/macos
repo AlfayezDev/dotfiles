@@ -1,7 +1,3 @@
-# ~/dotfiles/.config/zsh/macos
-export PATH="/opt/homebrew/bin:$PATH"
-export PATH="$HOME/.bun/bin:$PATH"
-export NODE_EXTRA_CA_CERTS="$HOME/mycerts.pem"
-# alias python=python3
-export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
-. "$HOME/.cargo/env"
+# macOS-specific configuration
+# Note: Most PATH setup is now in ~/.zshrc and ~/.zprofile
+# This file is kept for any macOS-only settings that don't belong elsewhere
