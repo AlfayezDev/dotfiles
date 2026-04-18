@@ -6,7 +6,7 @@ alias y=yarn
 alias e=expo
 alias g=git
 alias v=vim
-alias vv=nvim .
+alias vv='nvim .'
 alias cat=bat
 alias c3=c3c
 killport() {
@@ -22,4 +22,18 @@ killport() {
     echo "Killing process $pid on port $1"
     kill $pid
 }
+scripts() {
+	jq .scripts package.json
+}
 alias installapk='adb install -r'
+killapp() {
+    if [ -z "$1" ]; then
+        echo "Usage: killapp <app>"
+        return 1
+    fi
+    pkill -f "${1}_debug"
+    sleep 0.5
+    if ! pgrep -f "$1" > /dev/null; then
+        echo "killed"
+    fi
+}
