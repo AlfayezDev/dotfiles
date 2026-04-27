@@ -3,7 +3,8 @@ return {
   build = ':TSUpdate',
   cmd = { 'TSUpdateSync', 'TSUpdate', 'TSInstall' },
   keys = {
-    { '<c-space>', desc = 'Increment Selection' },
+    { '<c-space>', desc = 'Increment Selection', mode = { 'n', 'x' } },
+    { '<c-@>', desc = 'Increment Selection', mode = { 'n', 'x' } },
     { '<bs>', desc = 'Decrement Selection', mode = 'x' },
   },
   dependencies = {
@@ -26,6 +27,7 @@ return {
       'zig',
       'typescript',
       'javascript',
+      'json',
       'wesl',
     },
     auto_install = true,
@@ -35,91 +37,89 @@ return {
     incremental_selection = {
       enable = true,
       keymaps = {
-        init_selection = '<C-space>',
-        node_incremental = '<C-space>',
+        init_selection = '<C-Space>',
+        node_incremental = '<C-Space>',
         scope_incremental = '<C-s>',
         node_decremental = '<BS>',
       },
     },
-  },
+    textobjects = {
+      select = {
+        enable = true,
+        lookahead = true,
+        keymaps = {
+          ['af'] = '@function.outer',
+          ['if'] = '@function.inner',
 
-  textobjects = {
-    select = {
-      enable = true,
-      lookahead = true,
-      keymaps = {
+          ['ac'] = '@class.outer',
+          ['ic'] = '@class.inner',
 
-        ['af'] = '@function.outer',
-        ['if'] = '@function.inner',
+          ['aa'] = '@parameter.outer',
+          ['ia'] = '@parameter.inner',
 
-        ['ac'] = '@class.outer',
-        ['ic'] = '@class.inner',
+          ['ab'] = '@block.outer',
+          ['ib'] = '@block.inner',
 
-        ['aa'] = '@parameter.outer',
-        ['ia'] = '@parameter.inner',
+          ['a/'] = '@comment.outer',
 
-        ['ab'] = '@block.outer',
-        ['ib'] = '@block.inner',
+          ['ai'] = '@conditional.outer',
+          ['ii'] = '@conditional.inner',
 
-        ['a/'] = '@comment.outer',
-
-        ['ai'] = '@conditional.outer',
-        ['ii'] = '@conditional.inner',
-
-        ['al'] = '@loop.outer',
-        ['il'] = '@loop.inner',
+          ['al'] = '@loop.outer',
+          ['il'] = '@loop.inner',
+        },
       },
-    },
-    move = {
-      enable = true,
-      set_jumps = true,
-      goto_next_start = {
-        [']f'] = '@function.outer',
-        [']c'] = '@class.outer',
-        [']a'] = '@parameter.inner',
-        [']b'] = '@block.outer',
-        [']i'] = '@conditional.outer',
-        [']l'] = '@loop.outer',
-        [']s'] = '@statement.outer',
+      move = {
+        enable = true,
+        set_jumps = true,
+        goto_next_start = {
+          [']f'] = '@function.outer',
+          [']c'] = '@class.outer',
+          [']a'] = '@parameter.inner',
+          [']b'] = '@block.outer',
+          [']i'] = '@conditional.outer',
+          [']l'] = '@loop.outer',
+          [']s'] = '@statement.outer',
+        },
+        goto_next_end = {
+          [']F'] = '@function.outer',
+          [']C'] = '@class.outer',
+          [']B'] = '@block.outer',
+        },
+        goto_previous_start = {
+          ['[f'] = '@function.outer',
+          ['[c'] = '@class.outer',
+          ['[a'] = '@parameter.inner',
+          ['[b'] = '@block.outer',
+          ['[i'] = '@conditional.outer',
+          ['[l'] = '@loop.outer',
+          ['[s'] = '@statement.outer',
+        },
+        goto_previous_end = {
+          ['[F'] = '@function.outer',
+          ['[C'] = '@class.outer',
+          ['[B'] = '@block.outer',
+        },
       },
-      goto_next_end = {
-        [']F'] = '@function.outer',
-        [']C'] = '@class.outer',
-        [']B'] = '@block.outer',
+      swap = {
+        enable = true,
+        swap_next = {
+          ['<leader>sn'] = '@parameter.inner',
+          ['<leader>sf'] = '@function.outer',
+        },
+        swap_previous = {
+          ['<leader>sp'] = '@parameter.inner',
+          ['<leader>sF'] = '@function.outer',
+        },
       },
-      goto_previous_start = {
-        ['[f'] = '@function.outer',
-        ['[c'] = '@class.outer',
-        ['[a'] = '@parameter.inner',
-        ['[b'] = '@block.outer',
-        ['[i'] = '@conditional.outer',
-        ['[l'] = '@loop.outer',
-        ['[s'] = '@statement.outer',
-      },
-      goto_previous_end = {
-        ['[F'] = '@function.outer',
-        ['[C'] = '@class.outer',
-        ['[B'] = '@block.outer',
-      },
-    },
-    swap = {
-      enable = true,
-      swap_next = {
-        ['<leader>sn'] = '@parameter.inner',
-        ['<leader>sf'] = '@function.outer',
-      },
-      swap_previous = {
-        ['<leader>sp'] = '@parameter.inner',
-        ['<leader>sF'] = '@function.outer',
-      },
-    },
-    lsp_interop = {
-      enable = true,
-      border = 'none',
-      floating_preview_opts = {},
-      peek_definition_code = {
-        ['<leader>pf'] = '@function.outer',
-        ['<leader>pc'] = '@class.outer',
+      lsp_interop = {
+        enable = true,
+        border = 'none',
+        floating_preview_opts = {},
+        peek_definition_code = {
+          ['<leader>pf'] = '@function.outer',
+          ['<leader>pc'] = '@class.outer',
+        },
       },
     },
   },
@@ -153,7 +153,7 @@ return {
     end, { desc = 'Toggle fold' })
 
     vim.keymap.set('n', '<leader>df', function()
-      require('nvim-treesitter.localtionlist').function_definitions()
+      require('nvim-treesitter.locationlist').function_definitions()
     end, { desc = 'List functions' })
     vim.opt.foldmethod = 'expr'
     vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
@@ -194,5 +194,9 @@ return {
     vim.keymap.set('n', '<leader>z', 'za', { desc = 'Toggle fold under cursor' })
 
     require('nvim-treesitter.configs').setup(opts)
+
+    -- Many terminals send <C-@> instead of <C-Space>, so bind it as a fallback
+    vim.keymap.set('n', '<C-@>', '<C-Space>', { remap = true, desc = 'Increment Selection' })
+    vim.keymap.set('x', '<C-@>', '<C-Space>', { remap = true, desc = 'Increment Selection' })
   end,
 }
