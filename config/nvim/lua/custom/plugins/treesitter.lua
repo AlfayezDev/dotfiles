@@ -249,16 +249,16 @@ return {
       end
 
       -- Swap textobjects
-      vim.keymap.set('n', '<leader>sn', function()
+      vim.keymap.set('n', '<leader>xn', function()
         swap.swap_next '@parameter.inner'
       end, { desc = 'Swap with next parameter' })
-      vim.keymap.set('n', '<leader>sf', function()
+      vim.keymap.set('n', '<leader>xf', function()
         swap.swap_next '@function.outer'
       end, { desc = 'Swap with next function' })
-      vim.keymap.set('n', '<leader>sp', function()
+      vim.keymap.set('n', '<leader>xp', function()
         swap.swap_previous '@parameter.inner'
       end, { desc = 'Swap with prev parameter' })
-      vim.keymap.set('n', '<leader>sF', function()
+      vim.keymap.set('n', '<leader>xF', function()
         swap.swap_previous '@function.outer'
       end, { desc = 'Swap with prev function' })
 
