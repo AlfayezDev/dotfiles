@@ -16,6 +16,7 @@ export PATH="$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH"
 export PATH="$HOME/.bun/bin:$PATH"
 export PATH="$HOME/.opencode/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/share/nvim/mason/bin:$PATH"
 export PATH="$PATH:$HOME/.maestro/bin"
 export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin/"
 

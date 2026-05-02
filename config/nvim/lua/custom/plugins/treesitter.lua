@@ -1,67 +1,63 @@
+local languages = {
+  'bash',
+  'python',
+  'c',
+  'diff',
+  'html',
+  'lua',
+  'luadoc',
+  'markdown',
+  'markdown_inline',
+  'query',
+  'vim',
+  'vimdoc',
+  'zig',
+  'typescript',
+  'javascript',
+  'json',
+}
+
 return {
   {
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
+    lazy = false,
     build = ':TSUpdate',
     cmd = { 'TSUpdateSync', 'TSUpdate', 'TSInstall' },
     config = function()
-      require('nvim-treesitter.install').prefer_git = true
+      -- Register custom parser before install (new main branch API)
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'TSUpdate',
+        callback = function()
+          require('nvim-treesitter.parsers').wesl = {
+            install_info = {
+              url = 'https://github.com/wgsl-tooling-wg/tree-sitter-wesl',
+              files = { 'src/parser.c', 'src/scanner.c' },
+              branch = 'main',
+            },
+          }
+        end,
+      })
 
-      local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
-      parser_config.wesl = {
-        install_info = {
-          url = 'https://github.com/wgsl-tooling-wg/tree-sitter-wesl',
-          files = { 'src/parser.c', 'src/scanner.c' },
-          branch = 'main',
-        },
-      }
-
-      -- Fix set-lang-from-info-string! for Neovim 0.12+ (match returns node list, not single node)
-      vim.treesitter.query.add_directive('set-lang-from-info-string!', function(match, _, bufnr, pred, metadata)
-        local capture_id = pred[2]
-        local node = match[capture_id]
-        if not node then
-          return
-        end
-        if type(node) == 'table' then
-          node = node[1]
-        end
-        if not node then
-          return
-        end
-        local ok, text = pcall(vim.treesitter.get_node_text, node, bufnr)
-        if not ok or not text then
-          return
-        end
-        metadata['injection.language'] = text:lower()
-      end, { force = true, all = true })
-
-      require('nvim-treesitter.configs').setup {
-        ensure_installed = {
-          'bash',
-          'python',
-          'c',
-          'diff',
-          'html',
-          'lua',
-          'luadoc',
-          'markdown',
-          'markdown_inline',
-          'query',
-          'vim',
-          'vimdoc',
-          'zig',
-          'typescript',
-          'javascript',
-          'json',
-          'wesl',
-        },
-        auto_install = true,
-      }
+      -- Install parsers (async, skips already-installed)
+      local all_langs = {}
+      for _, lang in ipairs(languages) do
+        all_langs[#all_langs + 1] = lang
+      end
+      all_langs[#all_langs + 1] = 'wesl'
+      require('nvim-treesitter').install(all_langs)
 
       -- Use built-in treesitter for highlight, indent, folding
       vim.api.nvim_create_autocmd('FileType', {
+        group = vim.api.nvim_create_augroup('treesitter.setup', {}),
         callback = function(args)
-          pcall(vim.treesitter.start, args.buf)
+          local buf = args.buf
+          local filetype = args.match
+          local lang = vim.treesitter.language.get_lang(filetype) or filetype
+          if not pcall(vim.treesitter.language.add, lang) then
+            return
+          end
+          pcall(vim.treesitter.start, buf, lang)
         end,
       })
 
@@ -70,10 +66,59 @@ return {
       vim.opt.foldenable = false
       vim.opt.foldlevel = 99
 
-      -- Incremental selection via built-in API
+      -- Incremental selection using treesitter node navigation
+      -- Ctrl+Space to select current node / expand to parent, BS to select child
       vim.keymap.set('n', '<C-Space>', function()
-        vim.treesitter.inspect_tree()
-      end, { desc = 'Treesitter Inspect' })
+        local buf = vim.api.nvim_get_current_buf()
+        local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+        local node = vim.treesitter.get_node({ bufnr = buf, row = row - 1, col = col })
+        if node then
+          local sr, sc, er, ec = node:range()
+          vim.fn.setpos("'<", { buf, sr + 1, sc, 0 })
+          vim.fn.setpos("'>", { buf, er + 1, ec - 1, 0 })
+          vim.cmd 'normal! gv'
+        end
+      end, { desc = 'Treesitter select node' })
+
+      vim.keymap.set('x', '<C-Space>', function()
+        local buf = vim.api.nvim_get_current_buf()
+        local _, ec = unpack(vim.fn.getpos("'>"))
+        local _, sc = unpack(vim.fn.getpos("'<"))
+        local row = vim.fn.line "." - 1
+        local col = math.max(0, math.min(ec, sc) - 1)
+        local node = vim.treesitter.get_node({ bufnr = buf, row = row, col = col })
+        if node then
+          local parent = node:parent()
+          while parent do
+            local sr, sc2, er, ec2 = parent:range()
+            local cur_sr = vim.fn.line "'" - 1
+            local cur_er = vim.fn.line "'>"
+            if sr < cur_sr or (sr == cur_sr and er + 1 > cur_er) then
+              vim.fn.setpos("'<", { buf, sr + 1, sc2, 0 })
+              vim.fn.setpos("'>", { buf, er + 1, math.max(1, ec2), 0 })
+              vim.cmd 'normal! gv'
+              return
+            end
+            parent = parent:parent()
+          end
+        end
+      end, { desc = 'Treesitter expand selection' })
+
+      vim.keymap.set('x', '<BS>', function()
+        local buf = vim.api.nvim_get_current_buf()
+        local row = vim.fn.line "." - 1
+        local col = vim.fn.col "." - 1
+        local node = vim.treesitter.get_node({ bufnr = buf, row = row, col = col })
+        if node then
+          local child = node:child(0)
+          if child then
+            local sr, sc, er, ec = child:range()
+            vim.fn.setpos("'<", { buf, sr + 1, sc, 0 })
+            vim.fn.setpos("'>", { buf, er + 1, math.max(1, ec), 0 })
+            vim.cmd 'normal! gv'
+          end
+        end
+      end, { desc = 'Treesitter shrink selection' })
 
       -- Fold keymaps
       vim.keymap.set('n', 'zc', function()
@@ -112,92 +157,119 @@ return {
   },
   {
     'nvim-treesitter/nvim-treesitter-textobjects',
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    branch = 'main',
     event = { 'BufReadPost', 'BufNewFile' },
     config = function()
-      require('nvim-treesitter.configs').setup {
-        textobjects = {
-          select = {
-            enable = true,
-            lookahead = true,
-            keymaps = {
-              ['af'] = '@function.outer',
-              ['if'] = '@function.inner',
-              ['ac'] = '@class.outer',
-              ['ic'] = '@class.inner',
-              ['aa'] = '@parameter.outer',
-              ['ia'] = '@parameter.inner',
-              ['ab'] = '@block.outer',
-              ['ib'] = '@block.inner',
-              ['a/'] = '@comment.outer',
-              ['ai'] = '@conditional.outer',
-              ['ii'] = '@conditional.inner',
-              ['al'] = '@loop.outer',
-              ['il'] = '@loop.inner',
-            },
-          },
-          move = {
-            enable = true,
-            set_jumps = true,
-            goto_next_start = {
-              [']f'] = '@function.outer',
-              [']c'] = '@class.outer',
-              [']a'] = '@parameter.inner',
-              [']b'] = '@block.outer',
-              [']i'] = '@conditional.outer',
-              [']l'] = '@loop.outer',
-              [']s'] = '@statement.outer',
-            },
-            goto_next_end = {
-              [']F'] = '@function.outer',
-              [']C'] = '@class.outer',
-              [']B'] = '@block.outer',
-            },
-            goto_previous_start = {
-              ['[f'] = '@function.outer',
-              ['[c'] = '@class.outer',
-              ['[a'] = '@parameter.inner',
-              ['[b'] = '@block.outer',
-              ['[i'] = '@conditional.outer',
-              ['[l'] = '@loop.outer',
-              ['[s'] = '@statement.outer',
-            },
-            goto_previous_end = {
-              ['[F'] = '@function.outer',
-              ['[C'] = '@class.outer',
-              ['[B'] = '@block.outer',
-            },
-          },
-          swap = {
-            enable = true,
-            swap_next = {
-              ['<leader>sn'] = '@parameter.inner',
-              ['<leader>sf'] = '@function.outer',
-            },
-            swap_previous = {
-              ['<leader>sp'] = '@parameter.inner',
-              ['<leader>sF'] = '@function.outer',
-            },
-          },
-          lsp_interop = {
-            enable = true,
-            border = 'none',
-            floating_preview_opts = {},
-            peek_definition_code = {
-              ['<leader>pf'] = '@function.outer',
-              ['<leader>pc'] = '@class.outer',
-            },
-          },
+      require('nvim-treesitter-textobjects').setup {
+        select = {
+          lookahead = true,
+        },
+        move = {
+          set_jumps = true,
         },
       }
 
-      local ts_repeat_move = require 'nvim-treesitter.textobjects.repeatable_move'
-      vim.keymap.set({ 'n', 'x', 'o' }, ';', ts_repeat_move.repeat_last_move)
-      vim.keymap.set({ 'n', 'x', 'o' }, ',', ts_repeat_move.repeat_last_move_opposite)
-      vim.keymap.set({ 'n', 'x', 'o' }, 'f', ts_repeat_move.builtin_f)
-      vim.keymap.set({ 'n', 'x', 'o' }, 'F', ts_repeat_move.builtin_F)
-      vim.keymap.set({ 'n', 'x', 'o' }, 't', ts_repeat_move.builtin_t)
-      vim.keymap.set({ 'n', 'x', 'o' }, 'T', ts_repeat_move.builtin_T)
+      local select = require 'nvim-treesitter-textobjects.select'
+      local move = require 'nvim-treesitter-textobjects.move'
+      local swap = require 'nvim-treesitter-textobjects.swap'
+
+      -- Select textobjects
+      local select_keys = {
+        ['af'] = '@function.outer',
+        ['if'] = '@function.inner',
+        ['ac'] = '@class.outer',
+        ['ic'] = '@class.inner',
+        ['aa'] = '@parameter.outer',
+        ['ia'] = '@parameter.inner',
+        ['ab'] = '@block.outer',
+        ['ib'] = '@block.inner',
+        ['a/'] = '@comment.outer',
+        ['ai'] = '@conditional.outer',
+        ['ii'] = '@conditional.inner',
+        ['al'] = '@loop.outer',
+        ['il'] = '@loop.inner',
+      }
+      for key, query in pairs(select_keys) do
+        vim.keymap.set({ 'x', 'o' }, key, function()
+          select.select_textobject(query, 'textobjects')
+        end, { desc = 'Select ' .. query })
+      end
+
+      -- Move textobjects
+      local move_next_start = {
+        [']f'] = '@function.outer',
+        [']c'] = '@class.outer',
+        [']a'] = '@parameter.inner',
+        [']b'] = '@block.outer',
+        [']i'] = '@conditional.outer',
+        [']l'] = '@loop.outer',
+        [']s'] = '@statement.outer',
+      }
+      for key, query in pairs(move_next_start) do
+        vim.keymap.set({ 'n', 'x', 'o' }, key, function()
+          move.goto_next_start(query, 'textobjects')
+        end, { desc = 'Next ' .. query })
+      end
+
+      local move_next_end = {
+        [']F'] = '@function.outer',
+        [']C'] = '@class.outer',
+        [']B'] = '@block.outer',
+      }
+      for key, query in pairs(move_next_end) do
+        vim.keymap.set({ 'n', 'x', 'o' }, key, function()
+          move.goto_next_end(query, 'textobjects')
+        end, { desc = 'Next end ' .. query })
+      end
+
+      local move_prev_start = {
+        ['[f'] = '@function.outer',
+        ['[c'] = '@class.outer',
+        ['[a'] = '@parameter.inner',
+        ['[b'] = '@block.outer',
+        ['[i'] = '@conditional.outer',
+        ['[l'] = '@loop.outer',
+        ['[s'] = '@statement.outer',
+      }
+      for key, query in pairs(move_prev_start) do
+        vim.keymap.set({ 'n', 'x', 'o' }, key, function()
+          move.goto_previous_start(query, 'textobjects')
+        end, { desc = 'Prev ' .. query })
+      end
+
+      local move_prev_end = {
+        ['[F'] = '@function.outer',
+        ['[C'] = '@class.outer',
+        ['[B'] = '@block.outer',
+      }
+      for key, query in pairs(move_prev_end) do
+        vim.keymap.set({ 'n', 'x', 'o' }, key, function()
+          move.goto_previous_end(query, 'textobjects')
+        end, { desc = 'Prev end ' .. query })
+      end
+
+      -- Swap textobjects
+      vim.keymap.set('n', '<leader>sn', function()
+        swap.swap_next '@parameter.inner'
+      end, { desc = 'Swap with next parameter' })
+      vim.keymap.set('n', '<leader>sf', function()
+        swap.swap_next '@function.outer'
+      end, { desc = 'Swap with next function' })
+      vim.keymap.set('n', '<leader>sp', function()
+        swap.swap_previous '@parameter.inner'
+      end, { desc = 'Swap with prev parameter' })
+      vim.keymap.set('n', '<leader>sF', function()
+        swap.swap_previous '@function.outer'
+      end, { desc = 'Swap with prev function' })
+
+      -- Repeatable move (replaces f/F/t/T and ;/,)
+      local ts_repeat_move = require 'nvim-treesitter-textobjects.repeatable_move'
+      vim.keymap.set({ 'n', 'x', 'o' }, ';', ts_repeat_move.repeat_last_move_next)
+      vim.keymap.set({ 'n', 'x', 'o' }, ',', ts_repeat_move.repeat_last_move_previous)
+      vim.keymap.set({ 'n', 'x', 'o' }, 'f', ts_repeat_move.builtin_f_expr, { expr = true })
+      vim.keymap.set({ 'n', 'x', 'o' }, 'F', ts_repeat_move.builtin_F_expr, { expr = true })
+      vim.keymap.set({ 'n', 'x', 'o' }, 't', ts_repeat_move.builtin_t_expr, { expr = true })
+      vim.keymap.set({ 'n', 'x', 'o' }, 'T', ts_repeat_move.builtin_T_expr, { expr = true })
     end,
   },
 }

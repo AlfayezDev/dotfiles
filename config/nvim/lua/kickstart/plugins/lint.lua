@@ -67,7 +67,16 @@ return {
                   lint.try_lint('biomejs')
                 end
               else
-                lint.try_lint()
+                -- Only lint if the required tool is actually installed
+                local ft_linters = lint.linters_by_ft[vim.bo.filetype]
+                if ft_linters then
+                  for _, linter_name in ipairs(ft_linters) do
+                    local linter = lint.linters[linter_name]
+                    if linter and vim.fn.executable(linter.cmd) == 1 then
+                      lint.try_lint(linter_name)
+                    end
+                  end
+                end
               end
            end
         end,
