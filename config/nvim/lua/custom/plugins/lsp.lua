@@ -1,11 +1,10 @@
 return {
   'neovim/nvim-lspconfig',
   dependencies = {
-    { 'williamboman/mason.nvim', config = true },
-    'williamboman/mason-lspconfig.nvim',
+    { 'mason-org/mason.nvim', config = true },
+    'mason-org/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
     { 'j-hui/fidget.nvim', opts = {} },
-    'hrsh7th/cmp-nvim-lsp',
   },
   config = function()
 
@@ -37,7 +36,7 @@ return {
         map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
         local client = vim.lsp.get_client_by_id(event.data.client_id)
-        if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+        if client and client:supports_method('textDocument/documentHighlight', event.buf) then
           local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
           vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
             buffer = event.buf,
@@ -58,7 +57,7 @@ return {
           })
         end
 
-        if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+        if client and client:supports_method('textDocument/inlayHint', event.buf) then
           map('<leader>th', function()
             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
           end, '[T]oggle Inlay [H]ints')
@@ -67,7 +66,7 @@ return {
     })
 
     local capabilities = vim.lsp.protocol.make_client_capabilities()
-    capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+    capabilities = vim.tbl_deep_extend('force', capabilities, require('blink.cmp').get_lsp_capabilities())
     local servers = {
       -- C/C++ with clangd
       clangd = {
@@ -91,10 +90,33 @@ return {
       },
       zls = { command = 'zls' },
       lua_ls = {
+        on_init = function(client)
+          client.server_capabilities.documentFormattingProvider = false -- Disable formatting (formatting is done by stylua)
+
+          if client.workspace_folders then
+            local path = client.workspace_folders[1].name
+            if path ~= vim.fn.stdpath 'config' and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc')) then return end
+          end
+
+          client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+            runtime = {
+              version = 'LuaJIT',
+              path = { 'lua/?.lua', 'lua/?/init.lua' },
+            },
+            workspace = {
+              checkThirdParty = false,
+              library = vim.tbl_extend('force', vim.api.nvim_get_runtime_file('', true), {
+                '${3rd}/luv/library',
+                '${3rd}/busted/library',
+              }),
+            },
+          })
+        end,
         settings = {
           Lua = {
             completion = { callSnippet = 'Replace' },
             diagnostics = { disable = { 'missing-fields' } },
+            format = { enable = false }, -- Disable formatting (formatting is done by stylua)
           },
         },
       },

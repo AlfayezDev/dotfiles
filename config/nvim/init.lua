@@ -1,3 +1,4 @@
+vim.loader.enable()
 vim.opt_local.conceallevel = 1
 vim.o.termbidi = true
 -- Set NODE_EXTRA_CA_CERTS for corporate certificate
@@ -69,6 +70,11 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
+-- instead raise a dialog asking if you wish to save the current file(s)
+-- See `:help 'confirm'`
+vim.o.confirm = true
+
 -- [[ Basic Keymaps ]]
 
 -- Clear highlights on search when pressing <Esc> in normal mode
@@ -79,7 +85,25 @@ vim.keymap.set('n', '<leader>qq', '<cmd>qa<CR>', { desc = 'Quit' })
 -- Map Cmd+Space to select the entire scope
 -- vim.keymap.set('n', '<C-Space>', 'vaB', { noremap = true, silent = true, desc = 'Select entire scope' })
 
--- Diagnostic keymaps
+-- Diagnostic Config & Keymaps
+--  See `:help vim.diagnostic.Opts`
+vim.diagnostic.config {
+  update_in_insert = false,
+  severity_sort = true,
+  float = { border = 'rounded', source = 'if_many' },
+  underline = { severity = { min = vim.diagnostic.severity.WARN } },
+  virtual_text = true,
+  virtual_lines = false,
+  jump = {
+    on_jump = function(_, bufnr)
+      vim.diagnostic.open_float {
+        bufnr = bufnr,
+        scope = 'cursor',
+        focus = false,
+      }
+    end,
+  },
+}
 vim.keymap.set('n', '<leader>dd', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -109,7 +133,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
-    vim.highlight.on_yank()
+    vim.hl.on_yank()
   end,
 })
 
@@ -126,6 +150,7 @@ vim.opt.rtp:prepend(lazypath)
 vim.opt.rtp:append(vim.fn.stdpath 'data' .. '/site')
 require('lazy').setup({
 
+  { 'NMAC427/guess-indent.nvim', opts = {} },
   { 'numToStr/Comment.nvim', opts = {} },
   {
     'lewis6991/gitsigns.nvim',
