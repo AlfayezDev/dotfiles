@@ -14,7 +14,7 @@ return { -- Autocompletion
       end)(),
     },
     -- `friendly-snippets` contains a variety of premade snippets.
-    --    See the README about individual language/framework/plugin snippets:
+    --    See the README about individual language/framework snippets:
     --    https://github.com/rafamadriz/friendly-snippets
     -- {
     --   'rafamadriz/friendly-snippets',
@@ -26,6 +26,12 @@ return { -- Autocompletion
   --- @module 'blink.cmp'
   --- @type blink.cmp.Config
   opts = {
+    -- Disable completion during vim-visual-multi to prevent CompleteDone conflict
+    -- b:visual_multi is set by VM on init (vm.vim:43) and unlet on exit (vm.vim:179)
+    enabled = function()
+      return not vim.b.visual_multi
+    end,
+
     keymap = {
       -- 'default' (recommended) for mappings similar to built-in completions
       --   <c-y> to accept ([y]es) the completion.

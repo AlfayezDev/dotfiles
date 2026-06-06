@@ -25,6 +25,9 @@ return {
     build = ':TSUpdate',
     cmd = { 'TSUpdateSync', 'TSUpdate', 'TSInstall' },
     config = function()
+      -- Add nvim-treesitter's runtime/queries to runtimepath so highlight queries are found
+      vim.opt.rtp:append(vim.fn.stdpath('data') .. '/lazy/nvim-treesitter/runtime')
+
       -- Register custom parser before install (new main branch API)
       vim.api.nvim_create_autocmd('User', {
         pattern = 'TSUpdate',
