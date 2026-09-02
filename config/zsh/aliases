@@ -4,6 +4,7 @@ alias p=pnpm
 alias b=bun
 alias y=yarn
 alias e=expo
+alias z=zedit
 alias g=git
 alias v=vim
 alias vv='nvim .'
