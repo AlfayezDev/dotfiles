@@ -38,7 +38,7 @@
     "allow_concurrent_runs": false,
     "show_summary": false,
     "reveal": "always",
-    "reveal_target": "dock",
+    "reveal_target": "center",
     "hide": "always"
   }
 ]
