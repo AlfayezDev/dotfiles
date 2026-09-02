@@ -1,0 +1,56 @@
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      "space q q": "workspace::CloseWindow",
+      "space g g": ["task::Spawn", { "task_name": "lazygit" }],
+      "space o t": "agent::ToggleFocus"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == normal",
+    "bindings": {
+      "!": ["task::Spawn", { "task_name": "bash: run file" }],
+      "space f": "editor::Format",
+      "space d d": "diagnostics::Deploy",
+      "space s f": "file_finder::Toggle",
+      "space s g": "pane::DeploySearch",
+      "space s d": "diagnostics::Deploy",
+      "space S": "pane::DeploySearch",
+      "space space": "tab_switcher::Toggle",
+      "space o a": "assistant::InlineAssist",
+      "space t h": "editor::ToggleInlayHints",
+      "g O": "outline::Toggle",
+      "ctrl-space": "editor::SelectLargerSyntaxNode",
+      "ctrl-backspace": "editor::SelectSmallerSyntaxNode",
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-j": "workspace::ActivatePaneDown",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-l": "workspace::ActivatePaneRight"
+    }
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      "ctrl-n": "editor::SelectNext"
+    }
+  },
+  {
+    "context": "ProjectPanel || GitPanel || OutlinePanel || CollaborationPanel || AgentPanel",
+    "bindings": {
+      "q": "workspace::CloseActiveDock"
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "alt-q": "workspace::CloseActiveDock"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      "alt-enter": "editor::ConfirmCompletion"
+    }
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "label": "bash: run file",
+    "command": "bash",
+    "args": ["$ZED_FILE"],
+    "reveal": "always",
+    "reveal_target": "dock"
+  },
+  {
+    "label": "lazygit",
+    "command": "lazygit",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "show_summary": false,
+    "reveal": "always"
+  }
+]
