@@ -1,10 +1,11 @@
 # Main config (ghostty/config)
 # Base settings work on both platforms
-font-family = MonoLisa
+font-family = MonoLisaCode
+font-family = Symbols Nerd Font Mono
 font-style = Regular
 font-size = 18
-font-family-italic = MonoLisa
-font-style-italic = Regular
+font-family-italic = MonoLisaCode
+font-style-italic = Italic
 theme = "Gruvbox Dark Hard"
 background-opacity = 0.7
 background-blur-radius = 20
