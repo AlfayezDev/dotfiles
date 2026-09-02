@@ -7,11 +7,24 @@
     "reveal_target": "dock"
   },
   {
+    "label": "Oil",
+    "command": "zed-oil",
+    "shell": { "with_arguments": { "program": "/usr/bin/bash", "args": ["--noprofile", "--norc"] } },
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "reveal_target": "center",
+    "hide": "always"
+  },
+  {
     "label": "lazygit",
     "command": "lazygit",
+    "shell": { "with_arguments": { "program": "/usr/bin/bash", "args": ["--noprofile", "--norc"] } },
     "use_new_terminal": true,
     "allow_concurrent_runs": false,
     "show_summary": false,
-    "reveal": "always"
+    "reveal": "always",
+    "reveal_target": "dock",
+    "hide": "always"
   }
 ]

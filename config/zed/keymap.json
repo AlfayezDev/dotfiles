@@ -4,7 +4,13 @@
     "bindings": {
       "space q q": "workspace::CloseWindow",
       "space g g": ["task::Spawn", { "task_name": "lazygit" }],
-      "space o t": "agent::ToggleFocus"
+      "space o t": "agent::ToggleFocus",
+      "space e": "project_panel::ToggleFocus",
+      "space s f": "file_finder::Toggle",
+      "space s g": "pane::DeploySearch",
+      "space s d": "diagnostics::Deploy",
+      "space S": "pane::DeploySearch",
+      "space space": "tab_switcher::Toggle"
     }
   },
   {
@@ -12,12 +18,6 @@
     "bindings": {
       "!": ["task::Spawn", { "task_name": "bash: run file" }],
       "space f": "editor::Format",
-      "space d d": "diagnostics::Deploy",
-      "space s f": "file_finder::Toggle",
-      "space s g": "pane::DeploySearch",
-      "space s d": "diagnostics::Deploy",
-      "space S": "pane::DeploySearch",
-      "space space": "tab_switcher::Toggle",
       "space o a": "assistant::InlineAssist",
       "space t h": "editor::ToggleInlayHints",
       "g O": "outline::Toggle",
@@ -26,7 +26,8 @@
       "ctrl-h": "workspace::ActivatePaneLeft",
       "ctrl-j": "workspace::ActivatePaneDown",
       "ctrl-k": "workspace::ActivatePaneUp",
-      "ctrl-l": "workspace::ActivatePaneRight"
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "-": ["task::Spawn", { "task_name": "Oil", "reveal_target": "center" }]
     }
   },
   {
@@ -38,7 +39,8 @@
   {
     "context": "ProjectPanel || GitPanel || OutlinePanel || CollaborationPanel || AgentPanel",
     "bindings": {
-      "q": "workspace::CloseActiveDock"
+      "q": "workspace::CloseActiveDock",
+      "space e": "workspace::CloseActiveDock"
     }
   },
   {
