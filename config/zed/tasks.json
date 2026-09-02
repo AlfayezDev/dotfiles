@@ -14,11 +14,25 @@
     "allow_concurrent_runs": false,
     "reveal": "always",
     "reveal_target": "center",
-    "hide": "always"
+    "hide": "always",
+    "save": "current"
+  },
+  {
+    "label": "Oil root",
+    "command": "zed-oil",
+    "args": ["$ZED_WORKTREE_ROOT"],
+    "shell": { "with_arguments": { "program": "/usr/bin/bash", "args": ["--noprofile", "--norc"] } },
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "reveal_target": "center",
+    "hide": "always",
+    "save": "current"
   },
   {
     "label": "lazygit",
     "command": "lazygit",
+    "args": ["-p", "$ZED_WORKTREE_ROOT"],
     "shell": { "with_arguments": { "program": "/usr/bin/bash", "args": ["--noprofile", "--norc"] } },
     "use_new_terminal": true,
     "allow_concurrent_runs": false,

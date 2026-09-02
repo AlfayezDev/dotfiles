@@ -11,7 +11,7 @@
   "bottom_dock_layout": "contained",
   "tabs": {
     "file_icons": true,
-    "git_status": false
+    "git_status": true
   },
   "tab_bar": {
     "show_tab_bar_buttons": true,
@@ -70,7 +70,8 @@
   },
   "show_whitespaces": "none",
   "seed_search_query_from_cursor": "never",
-  "cli_default_open_behavior": "existing_window",
+  "autosave": "on_focus_change",
+  "cli_default_open_behavior": "new_window",
   "disable_ai": false,
   "tasks": {
     "enabled": true
@@ -143,16 +144,7 @@
     "trust_all_worktrees": true
   },
   "vim_mode": true,
-  "ui_font_size": 16,
-  "buffer_font_size": 15,
-  "theme": "Omazed",
-  "context_servers": {
-    "argent": {
-      "source": "custom",
-      "command": "argent",
-      "args": [
-        "mcp"
-      ]
-    }
-  }
+  "ui_font_size": 24.0,
+  "buffer_font_size": 15.0,
+  "theme": "Modest Dark"
 }

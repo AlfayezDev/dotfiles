@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Spawned from Zed task "Oil": open oil.nvim on current file's dir.
+# Spawned from Zed tasks "Oil" / "Oil root": open oil.nvim on a directory.
+# Dir priority: $1 arg, then $ZED_DIRNAME, then $ZED_WORKTREE_ROOT, then .
 # Enter on a file opens it back in Zed (see ~/.config/nvim/lua/custom/plugins/oil.lua).
-dir="${ZED_DIRNAME:-.}"
-[ -d "$dir" ] || dir="${ZED_WORKTREE_ROOT:-.}"
+dir="${1:-${ZED_DIRNAME:-${ZED_WORKTREE_ROOT:-.}}}"
+[ -d "$dir" ] || dir=.
 exec nvim --cmd 'let g:oil_open_in_zed = 1' \
   -c 'autocmd FileType oil nnoremap <buffer><silent> q :qa!<CR>' \
   "$dir"

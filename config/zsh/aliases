@@ -4,7 +4,14 @@ alias p=pnpm
 alias b=bun
 alias y=yarn
 alias e=expo
-alias z=zeditor
+# zeditor: no arg = open cwd in new window; else pass through (dir or file)
+z() {
+    if [ $# -eq 0 ]; then
+        zeditor .
+    else
+        zeditor "$@"
+    fi
+}
 alias g=git
 alias v=vim
 alias vv='nvim .'

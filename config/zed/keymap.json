@@ -27,7 +27,8 @@
       "ctrl-j": "workspace::ActivatePaneDown",
       "ctrl-k": "workspace::ActivatePaneUp",
       "ctrl-l": "workspace::ActivatePaneRight",
-      "-": ["task::Spawn", { "task_name": "Oil", "reveal_target": "center" }]
+      "-": ["task::Spawn", { "task_name": "Oil", "reveal_target": "center" }],
+      "space -": ["task::Spawn", { "task_name": "Oil root", "reveal_target": "center" }]
     }
   },
   {
