@@ -40,6 +40,37 @@ local function load_oil(dir)
   }
   vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
   vim.keymap.set('n', '<space>-', require('oil').toggle_float, { desc = 'Open parent dir (float)' })
+  -- Spawned from Zed: repaint with the Modest Dark palette so oil blends with the host window.
+  if vim.g.oil_open_in_zed then
+    vim.o.termguicolors = true
+    local md = {
+      bg = '#0F1219', fg = '#abb2bf', muted = '#495162',
+      hover = '#1e242e', sel = '#2c313a', blue = '#5ab0f6', red = '#ef5f6b',
+    }
+    local hls = {
+      { 'Normal', { fg = md.fg, bg = 'none' } },
+      { 'NormalNC', { bg = 'none' } },
+      { 'EndOfBuffer', { fg = md.bg, bg = 'none' } },
+      { 'SignColumn', { bg = 'none' } },
+      { 'LineNr', { fg = md.muted, bg = 'none' } },
+      { 'CursorLineNr', { fg = md.fg, bg = 'none' } },
+      { 'CursorLine', { bg = md.hover } },
+      { 'Visual', { bg = md.sel } },
+      { 'Directory', { fg = md.blue } },
+      { 'MatchParen', { fg = md.bg, bg = md.blue } },
+      { 'Search', { fg = md.bg, bg = md.blue } },
+      { 'IncSearch', { fg = md.bg, bg = md.blue } },
+      { 'WinBar', { fg = md.muted, bg = 'none' } },
+      { 'WinBarNC', { fg = md.muted, bg = 'none' } },
+      { 'StatusLine', { fg = md.fg, bg = md.hover } },
+      { 'StatusLineNC', { fg = md.muted, bg = md.bg } },
+      { 'FloatBorder', { fg = md.hover } },
+      { 'DiagnosticError', { fg = md.red } },
+    }
+    for _, hl in ipairs(hls) do
+      vim.api.nvim_set_hl(0, hl[1], hl[2])
+    end
+  end
   if dir then
     require('oil').open(dir)
   else
