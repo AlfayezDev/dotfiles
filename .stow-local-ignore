@@ -23,12 +23,14 @@ _SVN
 ^/setup\.sh$
 ^/stow\.sh$
 ^/\.ruff_cache$
+^/config$
 
 # --- machine-local: secrets + rebuilt-by-setup.sh ---
-# Zed settings become a REAL file at ~/.config/zed/settings.json so tokens
-# can never reach this repo through a symlink.
+# Zed settings become a real file so tokens cannot reach the repository. Tasks
+# become a real file so setup.sh can select the platform-specific shell path.
 ^/\.config/secrets/secrets$
 ^/\.config/zed/settings\.json$
+^/\.config/zed/tasks\.json$
 
 # --- machine-specific shells ---
 ^/\.config/\.zshrc$

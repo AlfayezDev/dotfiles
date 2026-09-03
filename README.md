@@ -11,7 +11,8 @@ Personal dotfiles managed with GNU Stow.
 ## Requirements
 
 - [GNU Stow](https://www.gnu.org/software/stow/)
-- [Neovim](https://neovim.io/)
+- [Neovim](https://neovim.io/) 0.12+
+- [tree-sitter CLI](https://tree-sitter.github.io/tree-sitter/) 0.26.1+
 - [Ghostty](https://github.com/mitchellh/ghostty) terminal
 - [Oh My Zsh](https://ohmyz.sh/)
 - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
@@ -62,7 +63,9 @@ export ZED_KAGI_API_KEY="..."
 tracked template + your local tokens. Tokens live only in the gitignored
 secrets file, never in the repo. Zed auto-installs every extension listed
 in `auto_install_extensions` (168 today) on first launch, so both machines
-converge on the same editor. Keymap, tasks and themes are stowed symlinks.
+converge on the same editor. Keymap and themes are stowed symlinks. Tasks are
+written as a local file so macOS can use `/bin/bash` while Linux keeps the
+tracked `/usr/bin/bash` path.
 
 Rules:
 - settings changes: edit `.config/zed/settings.json` (leave token fields

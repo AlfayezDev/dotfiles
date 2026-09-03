@@ -15,3 +15,6 @@ repomix-output.*
 
 # Machine-specific shells: per-machine .zshrc, common bits in .config/zsh/
 .config/.zshrc
+
+# Retired pre-migration staging tree.
+config/

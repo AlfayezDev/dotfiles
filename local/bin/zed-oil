@@ -4,6 +4,6 @@
 # Enter on a file opens it back in Zed (see ~/.config/nvim/lua/custom/plugins/oil.lua).
 dir="${1:-${ZED_DIRNAME:-${ZED_WORKTREE_ROOT:-.}}}"
 [ -d "$dir" ] || dir=.
-exec nvim --cmd 'let g:oil_open_in_zed = 1' \
-  -c 'autocmd FileType oil nnoremap <buffer><silent> q :qa!<CR>' \
+exec nvim --noplugin -n -i NONE \
+  -u "$HOME/.config/nvim/zed-oil.lua" \
   "$dir"

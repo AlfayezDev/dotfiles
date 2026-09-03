@@ -6,12 +6,6 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-# One-time migration from legacy ./config staging tree.
-# -n (no-clobber): never overwrites newer files already in ./.config.
-if [ -d config ]; then
-  cp -an config/. .config/
-fi
-
 # --adopt: if $HOME has a real file where the package has one, adopt it
 # (move it into the package) and symlink — instead of erroring.
 stow --no-folding --adopt -v -t "$HOME" .

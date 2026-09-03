@@ -289,8 +289,8 @@
     "quick_actions": false,
     "breadcrumbs": true
   },
-  "ui_font_family": "MonoLisaCode",
-  "buffer_font_family": "MonoLisaCode",
+  "ui_font_family": "MonoLisa",
+  "buffer_font_family": "MonoLisa",
   "project_panel": {
     "button": true,
     "dock": "right",

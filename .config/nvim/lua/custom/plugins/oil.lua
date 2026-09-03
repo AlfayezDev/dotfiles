@@ -22,7 +22,16 @@ local function load_oil(dir)
           local oil = require 'oil'
           local entry, dir = oil.get_cursor_entry(), oil.get_current_dir()
           if entry and entry.type == 'file' and dir then
-            vim.fn.jobstart({ 'zeditor', dir .. entry.name }, { detach = true })
+            -- Zed's CLI is `zed` on macOS and commonly `zeditor` on Linux.
+            local candidates = vim.fn.has('macunix') == 1 and { 'zed', 'zeditor' } or { 'zeditor', 'zed' }
+            local zed_cmd = vim.iter(candidates):find(function(cmd)
+              return vim.fn.executable(cmd) == 1
+            end)
+            if not zed_cmd then
+              vim.notify('Zed CLI not found (tried zed and zeditor)', vim.log.levels.ERROR)
+              return
+            end
+            vim.fn.jobstart({ zed_cmd, dir .. entry.name }, { detach = true })
             vim.cmd 'silent! qa!'
           else
             require('oil.actions').select.callback()
@@ -71,10 +80,24 @@ local function load_oil(dir)
       vim.api.nvim_set_hl(0, hl[1], hl[2])
     end
   end
-  if dir then
-    require('oil').open(dir)
+  local function open()
+    if dir then
+      require('oil').open(dir)
+    else
+      vim.cmd 'Oil'
+    end
+    if vim.g.oil_open_in_zed then
+      vim.keymap.set('n', 'q', '<cmd>qa!<cr>', { buffer = 0, silent = true, desc = 'Close Zed Oil task' })
+    end
+  end
+
+  -- The dedicated Zed launcher initializes during VimEnter. Deferring the
+  -- buffer switch by one event-loop tick lets Oil's BufReadCmd hooks attach
+  -- before it opens the directory.
+  if vim.g.oil_defer_open then
+    vim.schedule(open)
   else
-    vim.cmd 'Oil'
+    open()
   end
 end
 
