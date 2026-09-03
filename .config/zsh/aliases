@@ -4,10 +4,20 @@ alias p=pnpm
 alias b=bun
 alias y=yarn
 alias e=expo
-# zeditor: no arg = open cwd in new window; else pass through (dir or file)
-z() {
+# zoxide: `z` = smart cd (frecency jump), `zi` = interactive picker
+if command -v zoxide >/dev/null 2>&1; then
+    if [ -n "$ZSH_VERSION" ]; then
+        eval "$(zoxide init zsh)"
+    else
+        eval "$(zoxide init bash)"
+    fi
+fi
+# zeditor: no arg or dir arg = open as project in new window; files pass through
+zed() {
     if [ $# -eq 0 ]; then
-        zeditor .
+        zeditor -n "$PWD"
+    elif [ $# -eq 1 ] && [ -d "$1" ]; then
+        zeditor -n "$1"
     else
         zeditor "$@"
     fi
