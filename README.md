@@ -25,7 +25,7 @@ git clone https://github.com/alfayez-dev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
 # Install with stow (creates symlinks)
-./install.sh
+./setup.sh
 ```
 
 ## Structure
@@ -39,9 +39,9 @@ cd ~/dotfiles
 │       ├── aliases       # Shared aliases
 │       ├── arch          # Arch (btw) Linux (btw) specific settings
 │       └── macos         # macOS specific settings
-├── .zshrc                # Main Zsh configuration
+├── .zshrc                # Main Zsh config (machine-specific, not tracked)
 ├── .stow-local-ignore    # Files to exclude from stow
-├── install.sh            # Installation script
+├── setup.sh              # Installation script (Linux + macOS)
 └── README.md             # Documentation
 ```
 
@@ -50,9 +50,24 @@ cd ~/dotfiles
 Sensitive data is stored in `~/.config/secrets/secrets` (not tracked in git).
 
 ```bash
-# Example ~/.config/secrets/secrets
+# Example ~/.config/secrets/secrets (never committed)
 export OPENAI_API_KEY="your-key-here"
+export ZED_SENTRY_TOKEN="..."
+export ZED_KAGI_API_KEY="..."
 ```
+
+## Zed sync (PC + laptop)
+
+`setup.sh` rebuilds `~/.config/zed/settings.json` as a **real file** =
+tracked template + your local tokens. Tokens live only in the gitignored
+secrets file, never in the repo. Zed auto-installs every extension listed
+in `auto_install_extensions` (168 today) on first launch, so both machines
+converge on the same editor. Keymap, tasks and themes are stowed symlinks.
+
+Rules:
+- settings changes: edit `.config/zed/settings.json` (leave token fields
+  empty), then `./setup.sh` on each machine
+- machine-specific files (`.zshrc`, tokens): not tracked
 
 ## Key Features
 

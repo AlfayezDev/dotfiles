@@ -12,3 +12,6 @@
 lazy-lock.json
 repomix-output.*
 .ruff_cache/
+
+# Machine-specific shells: per-machine .zshrc, common bits in .config/zsh/
+.config/.zshrc
