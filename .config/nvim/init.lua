@@ -458,6 +458,7 @@ do
   ---@type table<string, vim.lsp.Config>
   local servers = {
     clangd = {
+      enabled = false, -- off: valiant project parses via unity; re-enable when needed
       cmd = {
         'clangd',
         '--background-index',
@@ -647,10 +648,12 @@ do
 
     keymap = {
       -- 'default' preset: <C-y> accept, <C-space> show, <Tab>/<S-Tab> snippet nav,
-      -- <C-n>/<C-p> cycle, <C-e> cancel. We do NOT use 'enter' (which maps <CR>)
-      -- so plain Enter is always a newline. Confirm is bound to <A-CR> globally
-      -- below — immune to blink's buffer-local idempotency skip.
+      -- <C-n>/<C-p> cycle, <C-e> cancel. <CR>: accept selection when menu open,
+      -- else newline (fallback). <A-CR> global confirm kept as alias below.
+      -- Buffer-local <CR> is covered by the VM-exit shim in multi-cursor.lua
+      -- (BLINK_INSERT_KEYS already lists '<CR>').
       preset = 'default',
+      ['<CR>'] = { 'select_and_accept', 'fallback' },
     },
 
     appearance = { nerd_font_variant = 'mono' },

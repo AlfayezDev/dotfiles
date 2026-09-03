@@ -4,11 +4,11 @@
 *.dll
 *.pyc
 *.class
-.config/
 
-# Ignore secrets and private info
-config/secrets/secrets
+# Machine-local secrets: template is tracked, real values never are.
+.config/secrets/secrets
 
 # Ignore plugin/package directories
 lazy-lock.json
 repomix-output.*
+.ruff_cache/

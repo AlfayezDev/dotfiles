@@ -1,10 +1,31 @@
-\.git
-\config
-\.gitignore
-\.stow-local-ignore
-^/README.*
-^/LICENSE.*
-^/install\.sh
-^/stow\.sh
-^/\.config/secrets/secrets\.template$
+# GNU Stow local ignore list. Presence REPLACES stock defaults, so they are
+# repeated below. Perl regex on paths relative to package root.
 
+# --- stock defaults ---
+CVS
+RCS
+\.git
+\.gitignore
+\.hg
+\.bzr
+\.svn
+_darcs
+\{arch\}
+_CVS
+_RCS
+_SVN
+=BUILD
+=CHECKOUT
+\.stow-local-ignore
+
+# --- repo metadata: never link into $HOME ---
+^/README\.md$
+^/setup\.sh$
+^/stow\.sh$
+^/\.ruff_cache$
+
+# --- machine-local: secrets + rebuilt-by-setup.sh ---
+# Zed settings become a REAL file at ~/.config/zed/settings.json so tokens
+# can never reach this repo through a symlink.
+^/\.config/secrets/secrets$
+^/\.config/zed/settings\.json$
