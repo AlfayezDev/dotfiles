@@ -14,4 +14,4 @@ fi
 
 # --adopt: if $HOME has a real file where the package has one, adopt it
 # (move it into the package) and symlink — instead of erroring.
-stow --adopt -v -t "$HOME" .
+stow --no-folding --adopt -v -t "$HOME" .
