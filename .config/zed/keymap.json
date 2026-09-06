@@ -19,20 +19,6 @@
     }
   },
   {
-    "context": "Workspace && !Editor && !Terminal",
-    "bindings": {
-      "space q q": "workspace::CloseWindow",
-      "space g g": ["task::Spawn", { "task_name": "lazygit" }],
-      "space o t": "agent::ToggleFocus",
-      "space e": "project_panel::ToggleFocus",
-      "space s f": "file_finder::Toggle",
-      "space s g": "pane::DeploySearch",
-      "space s d": "diagnostics::Deploy",
-      "space S": "pane::DeploySearch",
-      "space space": "tab_switcher::Toggle"
-    }
-  },
-  {
     "context": "Editor && vim_mode == normal",
     "bindings": {
       "!": ["task::Spawn", { "task_name": "bash: run file" }],
@@ -55,8 +41,7 @@
   {
     "context": "ProjectPanel || GitPanel || OutlinePanel || CollaborationPanel || AgentPanel",
     "bindings": {
-      "q": "workspace::CloseActiveDock",
-      "space e": "workspace::CloseActiveDock"
+      "alt-q": "workspace::CloseActiveDock"
     }
   },
   {
