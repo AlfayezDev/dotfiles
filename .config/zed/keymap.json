@@ -1,6 +1,24 @@
 [
   {
-    "context": "Workspace",
+    "context": "VimControl && !menu",
+    "bindings": {
+      "space q q": "workspace::CloseWindow",
+      "space g g": ["task::Spawn", { "task_name": "lazygit" }],
+      "space o t": "agent::ToggleFocus",
+      "space e": "project_panel::ToggleFocus",
+      "space s f": "file_finder::Toggle",
+      "space s g": "pane::DeploySearch",
+      "space s d": "diagnostics::Deploy",
+      "space S": "pane::DeploySearch",
+      "space space": "tab_switcher::Toggle",
+      "space f": "editor::Format",
+      "space o a": "assistant::InlineAssist",
+      "space t h": "editor::ToggleInlayHints",
+      "space -": ["task::Spawn", { "task_name": "Oil root", "reveal_target": "center" }]
+    }
+  },
+  {
+    "context": "Workspace && !Editor && !Terminal",
     "bindings": {
       "space q q": "workspace::CloseWindow",
       "space g g": ["task::Spawn", { "task_name": "lazygit" }],
@@ -17,9 +35,6 @@
     "context": "Editor && vim_mode == normal",
     "bindings": {
       "!": ["task::Spawn", { "task_name": "bash: run file" }],
-      "space f": "editor::Format",
-      "space o a": "assistant::InlineAssist",
-      "space t h": "editor::ToggleInlayHints",
       "g O": "outline::Toggle",
       "ctrl-space": "editor::SelectLargerSyntaxNode",
       "ctrl-backspace": "editor::SelectSmallerSyntaxNode",
@@ -27,8 +42,7 @@
       "ctrl-j": "workspace::ActivatePaneDown",
       "ctrl-k": "workspace::ActivatePaneUp",
       "ctrl-l": "workspace::ActivatePaneRight",
-      "-": ["task::Spawn", { "task_name": "Oil", "reveal_target": "center" }],
-      "space -": ["task::Spawn", { "task_name": "Oil root", "reveal_target": "center" }]
+      "-": ["task::Spawn", { "task_name": "Oil", "reveal_target": "center" }]
     }
   },
   {
