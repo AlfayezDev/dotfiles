@@ -2,6 +2,7 @@
   {
     "context": "VimControl && !menu",
     "bindings": {
+      "space": null,
       "space q q": "workspace::CloseWindow",
       "space g g": ["task::Spawn", { "task_name": "lazygit" }],
       "space o t": "agent::ToggleFocus",
@@ -68,6 +69,14 @@
     "context": "Editor && vim_mode == insert",
     "bindings": {
       "alt-enter": "editor::ConfirmCompletion"
+    }
+  },
+  {
+    "context": "AcpThread > Editor",
+    "bindings": {
+      "escape": "vim::InsertBefore",
+      "ctrl-c": "vim::InsertBefore",
+      "ctrl-[": "vim::InsertBefore"
     }
   }
 ]
