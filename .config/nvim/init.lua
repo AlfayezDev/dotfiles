@@ -700,6 +700,8 @@ end
 -- ============================================================
 require('custom.plugins.treesitter')
 
+require 'custom.commands'
+
 -- ============================================================
 -- SECTION 10: OPTIONAL EXAMPLES / NEXT STEPS
 -- kickstart.plugins.* examples + custom plugins

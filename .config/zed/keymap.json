@@ -6,6 +6,7 @@
       "space q q": "workspace::CloseWindow",
       "space g g": ["task::Spawn", { "task_name": "lazygit" }],
       "space o t": "agent::ToggleFocus",
+      "space t": "terminal_panel::ToggleFocus",
       "space e": "project_panel::ToggleFocus",
       "space s f": "file_finder::Toggle",
       "space s g": "pane::DeploySearch",
@@ -39,18 +40,6 @@
     }
   },
   {
-    "context": "ProjectPanel || GitPanel || OutlinePanel || CollaborationPanel || AgentPanel",
-    "bindings": {
-      "alt-q": "workspace::CloseActiveDock"
-    }
-  },
-  {
-    "context": "Terminal",
-    "bindings": {
-      "alt-q": "workspace::CloseActiveDock"
-    }
-  },
-  {
     "context": "Editor && vim_mode == insert",
     "bindings": {
       "alt-enter": "editor::ConfirmCompletion"
@@ -62,6 +51,30 @@
       "escape": "vim::InsertBefore",
       "ctrl-c": "vim::InsertBefore",
       "ctrl-[": "vim::InsertBefore"
+    }
+  },
+  {
+    "context": "ProjectPanel || GitPanel || OutlinePanel || CollaborationPanel || AgentPanel",
+    "bindings": {
+      "alt-q": "workspace::CloseActiveDock"
+    }
+  },
+  {
+    "context": "ProjectPanel && not_editing",
+    "bindings": {
+      "space": null
+    }
+  },
+  {
+    "context": "OutlinePanel && not_editing",
+    "bindings": {
+      "space": null
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "alt-q": "workspace::CloseActiveDock"
     }
   }
 ]

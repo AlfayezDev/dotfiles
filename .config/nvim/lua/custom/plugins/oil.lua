@@ -49,6 +49,54 @@ local function load_oil(dir)
   }
   vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
   vim.keymap.set('n', '<space>-', require('oil').toggle_float, { desc = 'Open parent dir (float)' })
+
+  -- Zed-handoff pickers: telescope result opens in Zed (path[:line]), then quits.
+  -- Lazy: telescope + plenary fetch on first use, cached afterwards.
+  local function zed_open(target)
+    local candidates = vim.fn.has('macunix') == 1 and { 'zed', 'zeditor' } or { 'zeditor', 'zed' }
+    local zed_cmd = vim.iter(candidates):find(function(cmd)
+      return vim.fn.executable(cmd) == 1
+    end)
+    if not zed_cmd then
+      vim.notify('Zed CLI not found (tried zed and zeditor)', vim.log.levels.ERROR)
+      return
+    end
+    vim.fn.jobstart({ zed_cmd, target }, { detach = true })
+    vim.cmd 'silent! qa!'
+  end
+
+  local function load_telescope()
+    vim.pack.add { gh 'nvim-lua/plenary.nvim', gh 'nvim-telescope/telescope.nvim' }
+    require('telescope').setup {}
+  end
+
+  local function zed_picker(name)
+    return function()
+      load_telescope()
+      require('telescope.builtin')[name] {
+        attach_mappings = function(prompt_bufnr)
+          local actions = require 'telescope.actions'
+          local action_state = require 'telescope.actions.state'
+          actions.select_default:replace(function()
+            local sel = action_state.get_selected_entry()
+            actions.close(prompt_bufnr)
+            if sel then
+              local path = sel.path or sel.filename
+              if sel.lnum then
+                path = ('%s:%d'):format(path, sel.lnum)
+              end
+              zed_open(path)
+            end
+          end)
+          return true
+        end,
+      }
+    end
+  end
+
+  -- Normal mode only: space stays literal in insert mode.
+  vim.keymap.set('n', '<leader>sf', zed_picker 'find_files', { desc = 'Find files (open in Zed)' })
+  vim.keymap.set('n', '<leader>sg', zed_picker 'live_grep', { desc = 'Live grep (open in Zed)' })
   -- Spawned from Zed: repaint with the Modest Dark palette so oil blends with the host window.
   if vim.g.oil_open_in_zed then
     vim.o.termguicolors = true
